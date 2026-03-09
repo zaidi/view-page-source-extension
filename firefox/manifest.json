@@ -8,9 +8,8 @@
       "id": "view-page-source@view-page-source.com",
       "strict_min_version": "109.0",
       "data_collection_permissions": {
-        "description": "This extension sends URLs you choose to analyze to www.view-page-source.com for source code viewing. User preferences (syntax highlighting, word wrap) are stored locally.",
-        "purposes": ["functionality"],
-        "data_categories": ["technical"]
+        "required": ["websiteActivity"],
+        "optional": ["technicalAndInteraction"]
       }
     }
   },
