@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Page Source</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="../icons/icon-48.png" alt="View Page Source" class="logo">
+      <h1>View Page Source</h1>
+    </div>
+
+    <div class="content">
+      <div class="url-display" id="url-display">
+        <span class="label">Current Page:</span>
+        <span class="url" id="current-url">Loading...</span>
+      </div>
+
+      <div class="actions">
+        <button id="view-source-btn" class="primary-btn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 4L2 8L5 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11 4L14 8L11 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          View Source
+        </button>
+      </div>
+
+      <div class="settings">
+        <h3>Quick Settings</h3>
+        <label class="checkbox-label">
+          <input type="checkbox" id="stylize-toggle" checked>
+          <span>Enable syntax highlighting</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="wordwrap-toggle">
+          <span>Enable word wrap</span>
+        </label>
+      </div>
+
+      <div class="info" id="status-message"></div>
+    </div>
+
+    <div class="footer">
+      <a href="https://www.view-page-source.com" target="_blank" class="link">Visit Website</a>
+      <span class="version">v1.1.1</span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

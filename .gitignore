@@ -1,0 +1,13 @@
+# Signing keys
+*.pem
+
+# Built packages
+*.crx
+*.xpi
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
