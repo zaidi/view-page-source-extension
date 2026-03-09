@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "View Page Source",
   "version": "1.1.1",
-  "description": "View source code, detect 100+ technologies, and analyze SEO. Smart Analysis reveals meta tags, structured data, frameworks, CMS, analytics, and security indicators.",
+  "description": "View source code, detect 100+ web technologies, and analyze SEO — meta tags, structured data, frameworks, and more.",
   "author": "View Page Source",
   "homepage_url": "https://www.view-page-source.com",
   "permissions": [
