@@ -6,7 +6,7 @@ Browser extensions for [View Page Source](https://www.view-page-source.com) — 
 
 | Browser | Manifest | Status | Install |
 |---------|----------|--------|---------|
-| [Chrome](chrome/) | V3 | Coming soon | [Chrome Web Store](#) |
+| [Chrome](chrome/) | V3 | Published | [Chrome Web Store](https://chromewebstore.google.com/detail/view-page-source/mmlapknmkidbhfdilplpajfnpkmoelea) |
 | [Firefox](firefox/) | V2 | Coming soon | [Firefox Add-ons](#) |
 | [Opera](opera/) | V3 | Coming soon | [Opera Add-ons](#) |
 
