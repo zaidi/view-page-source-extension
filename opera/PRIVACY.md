@@ -1,6 +1,6 @@
 # Privacy Policy - View Page Source Opera Extension
 
-**Last Updated: December 29, 2025**
+**Last Updated: June 4, 2026**
 
 ## Overview
 
@@ -19,16 +19,23 @@ View Page Source ("the Extension") is committed to protecting your privacy. This
 The Extension collects and processes **minimal data** required for functionality:
 
 1. **Current Tab URL** (only when you actively use the extension)
-   - **When**: Only when you click the extension icon, use the context menu, or use the keyboard shortcut
-   - **Why**: To send the URL to the View Page Source website for analysis
-   - **How Long**: Not stored by the extension; immediately sent to the website
-   - **Permission**: `activeTab` (Opera permission)
+   - **When**: Only when you click the extension icon, use the context menu, use a keyboard shortcut, or run a Quick Look
+   - **Why**: To send the URL to View Page Source for analysis, either by opening it in a new tab, or (for Quick Look) by calling the View Page Source API directly
+   - **How Long**: Not stored on a server by the extension; sent only when you act
+   - **Permission**: `activeTab`, plus access to `www.view-page-source.com` for Quick Look (Opera permissions)
 
 2. **User Preferences** (optional settings)
-   - **What**: Your syntax highlighting and word wrap preferences
-   - **Where**: Stored locally in Opera's sync storage
+   - **What**: Your default tool, default formatting (syntax highlighting / word wrap), and toolbar-button behaviour
+   - **Where**: Stored in Opera's sync storage
    - **Why**: To remember your settings across devices
    - **How Long**: Until you uninstall the extension or clear browser data
+   - **Permission**: `storage` (Opera permission)
+
+3. **Recent History** (stored locally on your device)
+   - **What**: The URLs of the last 10 pages you explicitly chose to analyze (not your general browsing history)
+   - **Where**: Your browser's **local** storage on this device only, and never synced or sent anywhere
+   - **Why**: To let you quickly re-open a page you recently analyzed
+   - **How Long**: Until you click "Clear" in the popup, or uninstall the extension
    - **Permission**: `storage` (Opera permission)
 
 ### What Data is NOT Collected
@@ -82,9 +89,14 @@ The Extension requests the following Opera permissions:
 - **Not Used For**: Any data collection or tracking
 
 ### storage
-- **Purpose**: Save your preferences (syntax highlighting, word wrap settings)
-- **Scope**: Opera's sync storage for preference persistence
-- **Not Used For**: Storing browsing data or personal information
+- **Purpose**: Save your preferences (synced) and your recent-history list (local only)
+- **Scope**: Opera's sync storage for preferences; local storage for the last 10 analyzed URLs
+- **Not Used For**: Storing your general browsing history or personal information
+
+### Access to www.view-page-source.com (host permission)
+- **Purpose**: Lets the **Quick Look** feature call the View Page Source API directly to fetch a page summary
+- **Scope**: Network requests to `https://www.view-page-source.com` only, no other sites
+- **Not Used For**: Reading, modifying, or injecting into the pages you visit
 
 ## User Rights and Control
 
@@ -180,12 +192,12 @@ We will respond to privacy inquiries within 30 days.
 ## Transparency
 
 This Extension is designed with privacy-first principles:
-- ✅ Minimal permissions
-- ✅ No tracking or analytics
-- ✅ Open source code
-- ✅ No data collection beyond functionality
-- ✅ No user accounts or authentication
-- ✅ Clear explanation of all permissions
+- Minimal permissions
+- No tracking or analytics
+- Open source code
+- No data collection beyond functionality
+- No user accounts or authentication
+- Clear explanation of all permissions
 
 ## Legal Compliance
 
@@ -199,4 +211,4 @@ This Extension complies with:
 
 **Your privacy matters.** This Extension is built with minimal data collection and maximum transparency. We only process the URLs you explicitly choose to analyze, and nothing more.
 
-**Last Updated**: December 29, 2025
+**Last Updated**: June 4, 2026

@@ -4,14 +4,19 @@ A Firefox browser extension that allows you to quickly view any webpage's HTML s
 
 ## Features
 
-- **One-Click Access** - Click the extension icon or use keyboard shortcut (`Ctrl+Shift+Y` / `Cmd+Shift+Y`)
-- **Right-Click Context Menu** - Right-click on any page and select "View Page Source"
+- **Multiple Tools** - View Source, SEO Check, Social Preview, and Extract HTML, from the toolbar popup or the right-click menu
+- **One-Click Access** - Click the extension icon or use a keyboard shortcut (`Ctrl+Shift+Y` / `Cmd+Shift+Y`)
+- **Right-Click Context Menu** - Run any tool on the current page, a linked page, or an image
+- **Quick Look** - See a page's HTTP status, title, size, tag/word counts, and generator inline in the popup, without opening a new tab
+- **Recent History** - Re-open the last 10 pages you analyzed (stored locally on your device)
+- **Options Page** - Choose your default tool, default formatting, and whether the toolbar button opens the popup or runs your default tool instantly
+- **Per-Tool Shortcuts** - Assign keyboard shortcuts to SEO Check, Social Preview, and Extract HTML
+- **Toolbar Status Badge** - After a Quick Look, the icon shows the page's HTTP status code, colour-coded
 - **Smart Analysis** - Comprehensive SEO audit covering meta tags, Open Graph, structured data (JSON-LD), internationalization, links, resources, and security indicators
 - **Technology Detection** - Identify 100+ technologies including CMS platforms (WordPress, Shopify, Wix), JavaScript frameworks (React, Vue, Next.js), CSS frameworks (Tailwind, Bootstrap), analytics (Google Analytics, Hotjar), CDNs, payment systems, and more
-- **Performance Metrics** - Get detailed timing data including DNS lookup, TCP connection, TLS handshake, server response, and download times
-- **Quick Settings** - Configure syntax highlighting and word wrap preferences
-- **Instant Results** - Opens a new tab with the source code and analysis automatically loaded
-- **Privacy-Focused** - Minimal permissions, no data collection by the extension
+- **Performance Metrics** - DNS lookup, TCP connection, TLS handshake, server response, and download times
+- **Dark Mode** - The popup and options follow your system theme
+- **Privacy-Focused** - Minimal permissions, no tracking by the extension
 
 ## Installation
 
@@ -46,36 +51,30 @@ Coming soon!
 
 ## Usage
 
-### Method 1: Toolbar Button
-1. Navigate to any webpage (HTTP or HTTPS)
-2. Click the View Page Source extension icon in the toolbar
-3. A new tab opens with the source code automatically loaded
+### Toolbar Button
+Click the extension icon to open the popup. From there you can run **View Source**, **SEO Check**, **Social Preview**, or **Extract HTML** on the current page, run a **Quick Look**, or re-open a page from **Recent**. (You can switch the toolbar button to run your default tool instantly instead of opening the popup. See the Options page.)
 
-### Method 2: Right-Click Menu
-1. Navigate to any webpage
-2. Right-click anywhere on the page
-3. Select "View Page Source" from the context menu
-4. A new tab opens with the source code automatically loaded
+### Right-Click Menu
+Right-click a **page**, a **link**, or an **image** and choose from the **View Page Source** submenu to run any tool. On a link it analyzes the link's target; on an image it inspects the image resource.
 
-### Method 3: Keyboard Shortcut
-1. Navigate to any webpage
-2. Press `Ctrl+Shift+Y` (Windows/Linux) or `Cmd+Shift+Y` (Mac)
-3. A new tab opens with the source code automatically loaded
+### Keyboard Shortcuts
+- `Ctrl+Shift+Y` (Win/Linux) / `Cmd+Shift+Y` (Mac) runs your **default tool** on the current page
+- SEO Check, Social Preview, and Extract HTML can each be given their own shortcut via `about:addons`, then the gear icon, then "Manage Extension Shortcuts"
 
-### Method 4: Popup Interface
-1. Click the extension icon to open the popup
-2. Review the current page URL
-3. Adjust quick settings (syntax highlighting, word wrap)
-4. Click "View Source" button
+### Quick Look
+Click **Quick Look** in the popup to fetch a compact summary (HTTP status, title, size, tag and word counts, and generator) without opening a new tab. The toolbar badge then shows the page's status code.
+
+### Options
+Open the extension's options to set your **default tool**, **default formatting** (syntax highlighting / word wrap), and the **toolbar-button behaviour** (open the popup, or run the default tool instantly).
 
 ## Quick Settings
 
-The extension popup allows you to configure preferences that will be applied when viewing source code:
+The popup's quick settings control formatting applied when viewing source code:
 
 - **Enable syntax highlighting** - Color-coded HTML for better readability
 - **Enable word wrap** - Wrap long lines of code
 
-Your settings are saved automatically and synced across devices (if signed into Firefox Sync).
+Your settings are saved automatically and synced across devices (if signed into Firefox Sync). Your **recent-history** list is stored locally on this device only.
 
 ## Supported Pages
 
@@ -105,22 +104,24 @@ When viewing an unsupported page, the extension will indicate it's not available
 - No third-party analytics in the extension
 
 ### Permissions Explained
-- **activeTab** - Access the URL of the current tab only when you click the extension
-- **contextMenus** - Add "View Page Source" option to the right-click menu
-- **storage** - Save your preferences (syntax highlighting, word wrap settings)
-- **notifications** - Show notifications when viewing unsupported pages
+- **activeTab** - Access the URL of the current tab only when you invoke the extension
+- **contextMenus** - Add the "View Page Source" options to the right-click menu
+- **storage** - Save your preferences and your recent-history list
+- **Access to `www.view-page-source.com`** - Lets the **Quick Look** feature fetch a page summary directly from the View Page Source API. The extension only ever talks to this one site.
 
 ## Keyboard Shortcuts
 
 | Action | Windows/Linux | Mac |
 |--------|---------------|-----|
-| View Source | `Ctrl+Shift+Y` | `Cmd+Shift+Y` |
+| Default tool (View Source) | `Ctrl+Shift+Y` | `Cmd+Shift+Y` |
+| SEO Check | _unassigned_ | _unassigned_ |
+| Social Preview | _unassigned_ | _unassigned_ |
+| Extract HTML | _unassigned_ | _unassigned_ |
 
-### Customize Keyboard Shortcut
+### Customize Keyboard Shortcuts
 1. Go to `about:addons`
-2. Click the gear icon (⚙️) → "Manage Extension Shortcuts"
-3. Find "View Page Source"
-4. Set your preferred shortcut
+2. Click the gear icon, then choose "Manage Extension Shortcuts"
+3. Set your preferred shortcut for any command
 
 ## Troubleshooting
 
@@ -212,6 +213,25 @@ This extension is part of the View Page Source project.
 - **Privacy Policy**: See [PRIVACY.md](PRIVACY.md)
 
 ## Changelog
+
+### Version 1.2.0 (2026-06-04)
+- **New tools**: SEO Check, Social Preview, and Extract HTML, from the popup and the right-click menu
+- **Link & image context menus**: analyze a link's target or an image resource without navigating to it
+- **Quick Look**: inline page summary (HTTP status, title, size, tag/word counts, generator) in the popup
+- **Recent history**: re-open the last 10 pages you analyzed (stored locally)
+- **Options page**: default tool, default formatting, and toolbar-button behaviour (popup vs. instant)
+- **Per-tool keyboard shortcuts** for SEO Check, Social Preview, and Extract HTML
+- **Toolbar status badge** showing the HTTP status after a Quick Look
+- **Dark mode** for the popup and options, following your system theme
+- **Localization-ready** (English included; other locales drop into `_locales/`)
+- Added access to `www.view-page-source.com` to power Quick Look
+
+### Version 1.1.2 (2026-06-03)
+- Keyboard shortcut now opens the source viewer directly instead of just opening the popup
+- Right-clicking inside an iframe now views that frame's source
+- Context menu now only appears on http/https pages
+- Removed the `notifications` permission (no longer needed)
+- Context menu and keyboard shortcut now honour your saved syntax-highlighting and word-wrap preferences
 
 ### Version 1.1.1 (2026-03-09)
 - Added `data_collection_permissions` for Firefox AMO compliance

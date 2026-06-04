@@ -15,38 +15,64 @@
 
     <div class="content">
       <div class="url-display" id="url-display">
-        <span class="label">Current Page:</span>
-        <span class="url" id="current-url">Loading...</span>
+        <span class="label" data-i18n="popupCurrentPage">Current Page:</span>
+        <span class="url" id="current-url" data-i18n="popupLoading">Loading...</span>
       </div>
 
       <div class="actions">
-        <button id="view-source-btn" class="primary-btn">
+        <button id="view-source-btn" class="primary-btn" data-tool="source">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 4L2 8L5 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M11 4L14 8L11 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          View Source
+          <span data-i18n="toolSource">View Source</span>
         </button>
+
+        <div class="tool-grid">
+          <button class="tool-btn" data-tool="seo" data-i18n="toolSeo">SEO Check</button>
+          <button class="tool-btn" data-tool="social" data-i18n="toolSocial">Social Preview</button>
+          <button class="tool-btn" data-tool="extract" data-i18n="toolExtract">Extract HTML</button>
+        </div>
+
+        <button id="quick-look-btn" class="secondary-btn" data-i18n="popupQuickLook">Quick Look</button>
+
+        <div class="quick-results" id="quick-results" hidden>
+          <div class="quick-row"><span class="quick-label" data-i18n="labelStatus">Status</span><span class="quick-value" id="q-status">-</span></div>
+          <div class="quick-row"><span class="quick-label" data-i18n="labelTitle">Title</span><span class="quick-value" id="q-title">-</span></div>
+          <div class="quick-row"><span class="quick-label" data-i18n="labelSize">Size</span><span class="quick-value" id="q-size">-</span></div>
+          <div class="quick-row"><span class="quick-label" data-i18n="labelTags">Tags</span><span class="quick-value" id="q-tags">-</span></div>
+          <div class="quick-row"><span class="quick-label" data-i18n="labelWords">Words</span><span class="quick-value" id="q-words">-</span></div>
+          <div class="quick-row" id="q-generator-row" hidden><span class="quick-label" data-i18n="labelGenerator">Generator</span><span class="quick-value" id="q-generator">-</span></div>
+          <button class="quick-full" data-tool="source" data-i18n="popupViewFullSource">View full source</button>
+        </div>
       </div>
 
       <div class="settings">
-        <h3>Quick Settings</h3>
+        <h3 data-i18n="popupQuickSettings">Quick Settings</h3>
         <label class="checkbox-label">
           <input type="checkbox" id="stylize-toggle" checked>
-          <span>Enable syntax highlighting</span>
+          <span data-i18n="popupStylize">Enable syntax highlighting</span>
         </label>
         <label class="checkbox-label">
           <input type="checkbox" id="wordwrap-toggle">
-          <span>Enable word wrap</span>
+          <span data-i18n="popupWordwrap">Enable word wrap</span>
         </label>
+      </div>
+
+      <div class="history" id="history-section" hidden>
+        <div class="history-header">
+          <h3 data-i18n="popupRecent">Recent</h3>
+          <button id="history-clear" class="history-clear" type="button" data-i18n="popupClear">Clear</button>
+        </div>
+        <div class="history-list" id="history-list"></div>
       </div>
 
       <div class="info" id="status-message"></div>
     </div>
 
     <div class="footer">
-      <a href="https://www.view-page-source.com" target="_blank" class="link">Visit Website</a>
-      <span class="version">v1.1.1</span>
+      <a href="https://www.view-page-source.com" target="_blank" class="link" data-i18n="popupVisitWebsite">Visit Website</a>
+      <span class="version">v1.2.0</span>
     </div>
   </div>
 

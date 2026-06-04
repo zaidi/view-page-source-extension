@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Page Source Options</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <img src="../icons/icon-48.png" alt="" class="logo">
+      <h1 data-i18n="optionsTitle">View Page Source Options</h1>
+    </header>
+
+    <section class="group">
+      <h2 data-i18n="optionsDefaultTool">Default tool</h2>
+      <p class="hint" data-i18n="optionsDefaultToolHint">Used by the keyboard shortcut and instant toolbar clicks.</p>
+      <select id="default-tool">
+        <option value="source" data-i18n="toolSource">View Source</option>
+        <option value="seo" data-i18n="toolSeo">SEO Check</option>
+        <option value="social" data-i18n="toolSocial">Social Preview</option>
+        <option value="extract" data-i18n="toolExtract">Extract HTML</option>
+      </select>
+    </section>
+
+    <section class="group">
+      <h2 data-i18n="optionsToolbar">Toolbar button</h2>
+      <label class="radio-label">
+        <input type="radio" name="toolbar" value="popup">
+        <span data-i18n="optionsToolbarPopup">Open the popup (default)</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="toolbar" value="instant">
+        <span data-i18n="optionsToolbarInstant">Run the default tool immediately</span>
+      </label>
+    </section>
+
+    <section class="group">
+      <h2 data-i18n="optionsFormatting">Default formatting</h2>
+      <p class="hint" data-i18n="optionsFormattingHint">Applies to View Source and Extract HTML.</p>
+      <label class="checkbox-label">
+        <input type="checkbox" id="stylize">
+        <span data-i18n="popupStylize">Enable syntax highlighting</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="wordwrap">
+        <span data-i18n="popupWordwrap">Enable word wrap</span>
+      </label>
+    </section>
+
+    <div class="status" id="status" data-i18n="optionsSaved">Saved</div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

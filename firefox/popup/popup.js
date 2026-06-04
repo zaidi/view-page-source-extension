@@ -2,10 +2,33 @@
 
 const WEBSITE_URL = 'https://www.view-page-source.com';
 
+// Tools the popup can launch. `formatting` = the page honours stylize/wrap.
+const TOOLS = {
+  source:  { path: '/',                formatting: true  },
+  seo:     { path: '/seo-checker/',    formatting: false },
+  social:  { path: '/social-preview/', formatting: false },
+  extract: { path: '/html-extractor/', formatting: true  }
+};
+
 let currentUrl = '';
+
+// Short alias for the i18n lookup
+const t = (key) => browser.i18n.getMessage(key);
+
+/**
+ * Replaces the text of every [data-i18n] element with its localized message
+ */
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const msg = t(el.dataset.i18n);
+    if (msg) el.textContent = msg;
+  });
+}
 
 // Initialize popup
 document.addEventListener('DOMContentLoaded', async () => {
+  applyI18n();
+
   try {
     // Get current tab
     const tabs = await browser.tabs.query({ active: true, currentWindow: true });
@@ -17,27 +40,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Check if URL is valid
       if (!isValidUrl(currentUrl)) {
-        showError('Cannot view source for this page. Only HTTP and HTTPS pages are supported.');
-        document.getElementById('view-source-btn').disabled = true;
+        showError(t('errUnsupportedPage'));
+        disableActions();
       }
     } else {
-      showError('Unable to get current page URL.');
-      document.getElementById('view-source-btn').disabled = true;
+      showError(t('errNoUrl'));
+      disableActions();
     }
 
     // Load saved settings
     await loadSettings();
 
-    // Add event listeners
-    document.getElementById('view-source-btn').addEventListener('click', handleViewSource);
+    // Wire every tool button (primary + secondary) via its data-tool attribute
+    document.querySelectorAll('[data-tool]').forEach((btn) => {
+      btn.addEventListener('click', () => openTool(btn.dataset.tool));
+    });
+    document.getElementById('quick-look-btn').addEventListener('click', quickLook);
     document.getElementById('stylize-toggle').addEventListener('change', saveSettings);
     document.getElementById('wordwrap-toggle').addEventListener('change', saveSettings);
+    document.getElementById('history-clear').addEventListener('click', clearHistory);
+
+    // Populate the recent-history list
+    renderHistory();
 
   } catch (error) {
     console.error('Popup initialization error:', error);
-    showError('Error initializing popup.');
+    showError(t('errInit'));
   }
 });
+
+/**
+ * Disables all tool buttons (used when the page can't be analyzed)
+ */
+function disableActions() {
+  document.querySelectorAll('[data-tool], #quick-look-btn').forEach((btn) => {
+    btn.disabled = true;
+  });
+}
 
 /**
  * Displays the current URL in the popup
@@ -92,29 +131,36 @@ function isValidUrl(url) {
 }
 
 /**
- * Handles the View Source button click
+ * Opens the selected tool for the current URL
+ * @param {string} toolId - Key into TOOLS
  */
-async function handleViewSource() {
-  if (!currentUrl || !isValidUrl(currentUrl)) {
-    showError('Invalid URL');
+async function openTool(toolId, url = currentUrl) {
+  const tool = TOOLS[toolId];
+  if (!tool) return;
+
+  if (!url || !isValidUrl(url)) {
+    showError(t('errInvalidUrl'));
     return;
   }
 
   try {
-    // Get current settings
-    const settings = await getSettings();
-
     // Construct target URL
-    const encodedUrl = encodeURIComponent(currentUrl);
-    let targetUrl = `${WEBSITE_URL}/?url=${encodedUrl}&autorun=true`;
+    const encodedUrl = encodeURIComponent(url);
+    let targetUrl = `${WEBSITE_URL}${tool.path}?url=${encodedUrl}&autorun=true`;
 
-    // Add settings to URL
-    if (settings.stylize) {
-      targetUrl += '&stylize=true';
+    // Only the source/extractor pages honour formatting preferences
+    if (tool.formatting) {
+      const settings = await getSettings();
+      if (settings.stylize) {
+        targetUrl += '&stylize=true';
+      }
+      if (settings.wordwrap) {
+        targetUrl += '&wrap=true';
+      }
     }
-    if (settings.wordwrap) {
-      targetUrl += '&wrap=true';
-    }
+
+    // Remember this URL before the popup closes
+    await addToHistory(url);
 
     // Open in new tab
     await browser.tabs.create({
@@ -127,8 +173,86 @@ async function handleViewSource() {
 
   } catch (error) {
     console.error('Error opening source viewer:', error);
-    showError('Failed to open source viewer.');
+    showError(t('errOpenFailed'));
   }
+}
+
+/**
+ * Runs an inline "Quick Look" analysis via the background script
+ */
+async function quickLook() {
+  if (!currentUrl || !isValidUrl(currentUrl)) {
+    showError(t('errInvalidUrl'));
+    return;
+  }
+
+  const btn = document.getElementById('quick-look-btn');
+  const pane = document.getElementById('quick-results');
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = t('popupAnalyzing');
+  pane.hidden = true;
+  clearStatus();
+
+  let response;
+  try {
+    response = await browser.runtime.sendMessage({ type: 'quick-look', url: currentUrl });
+  } catch (error) {
+    response = { ok: false, error: t('errReachService') };
+  }
+
+  btn.disabled = false;
+  btn.textContent = original;
+
+  if (!response || !response.ok) {
+    showError((response && response.error) || t('errQuickLookFailed'));
+    return;
+  }
+
+  renderQuickResults(response.result);
+  pane.hidden = false;
+
+  // The background recorded this URL - refresh the recent list
+  renderHistory();
+}
+
+/**
+ * Renders the Quick Look summary into the results pane
+ * @param {Object} r - Result object from the background
+ */
+function renderQuickResults(r) {
+  const status = r.httpCode
+    ? (r.httpVersion ? `${r.httpCode} (${r.httpVersion})` : String(r.httpCode))
+    : '-';
+  setText('q-status', status);
+  setText('q-title', r.title || '-');
+  setText('q-size', r.totalSize || '-');
+  setText('q-tags', (r.tagCount != null) ? r.tagCount.toLocaleString() : '-');
+  setText('q-words', (r.totalWords != null) ? r.totalWords.toLocaleString() : '-');
+
+  const genRow = document.getElementById('q-generator-row');
+  if (r.generators) {
+    setText('q-generator', r.generators);
+    genRow.hidden = false;
+  } else {
+    genRow.hidden = true;
+  }
+}
+
+/**
+ * Sets an element's text content by id
+ */
+function setText(id, text) {
+  document.getElementById(id).textContent = text;
+}
+
+/**
+ * Clears the status message
+ */
+function clearStatus() {
+  const statusEl = document.getElementById('status-message');
+  statusEl.textContent = '';
+  statusEl.className = 'info';
 }
 
 /**
@@ -145,7 +269,10 @@ async function loadSettings() {
  * Saves settings to storage
  */
 async function saveSettings() {
+  // Merge with existing settings so options-page values aren't overwritten
+  const current = await getSettings();
   const settings = {
+    ...current,
     stylize: document.getElementById('stylize-toggle').checked,
     wordwrap: document.getElementById('wordwrap-toggle').checked
   };
@@ -163,6 +290,7 @@ async function saveSettings() {
  * @returns {Promise<Object>} - Settings object
  */
 async function getSettings() {
+  const defaults = { stylize: true, wordwrap: false, defaultTool: 'source', toolbarAction: 'popup' };
   try {
     let result = await browser.storage.sync.get('settings');
 
@@ -171,16 +299,90 @@ async function getSettings() {
       result = await browser.storage.local.get('settings');
     }
 
-    return result.settings || {
-      stylize: true,
-      wordwrap: false
-    };
+    return { ...defaults, ...(result.settings || {}) };
   } catch (error) {
     // Return defaults on error
-    return {
-      stylize: true,
-      wordwrap: false
-    };
+    return { ...defaults };
+  }
+}
+
+// ---- Recent history (stored locally) ----
+
+const HISTORY_KEY = 'history';
+const HISTORY_MAX = 10;
+
+/**
+ * Records a URL at the top of the recent-history list
+ * @param {string} url
+ */
+async function addToHistory(url) {
+  try {
+    const store = await browser.storage.local.get(HISTORY_KEY);
+    const list = Array.isArray(store[HISTORY_KEY]) ? store[HISTORY_KEY] : [];
+    const next = [url, ...list.filter((u) => u !== url)].slice(0, HISTORY_MAX);
+    await browser.storage.local.set({ [HISTORY_KEY]: next });
+  } catch (error) {
+    // History is best-effort; ignore storage failures
+  }
+}
+
+/**
+ * Renders the recent-history list, or hides the section when empty
+ */
+async function renderHistory() {
+  const section = document.getElementById('history-section');
+  const listEl = document.getElementById('history-list');
+
+  let list = [];
+  try {
+    const store = await browser.storage.local.get(HISTORY_KEY);
+    list = Array.isArray(store[HISTORY_KEY]) ? store[HISTORY_KEY] : [];
+  } catch (error) {
+    list = [];
+  }
+
+  listEl.textContent = '';
+  if (!list.length) {
+    section.hidden = true;
+    return;
+  }
+
+  section.hidden = false;
+  list.forEach((url) => {
+    const item = document.createElement('button');
+    item.className = 'history-item';
+    item.type = 'button';
+    item.textContent = shortenUrl(url);
+    item.title = url;
+    item.addEventListener('click', () => openTool('source', url));
+    listEl.appendChild(item);
+  });
+}
+
+/**
+ * Clears the recent-history list
+ */
+async function clearHistory() {
+  try {
+    await browser.storage.local.remove(HISTORY_KEY);
+  } catch (error) {
+    // ignore
+  }
+  renderHistory();
+}
+
+/**
+ * Returns a compact, display-friendly form of a URL
+ * @param {string} url
+ * @returns {string}
+ */
+function shortenUrl(url) {
+  try {
+    const u = new URL(url);
+    const tail = u.pathname + u.search;
+    return u.hostname + (tail.length > 24 ? tail.slice(0, 24) + '...' : tail);
+  } catch (error) {
+    return url.length > 48 ? url.slice(0, 48) + '...' : url;
   }
 }
 

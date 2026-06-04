@@ -1,0 +1,61 @@
+{
+  "extDescription": {
+    "message": "View the HTML source of any web page, detect over 100 web technologies, and check SEO meta tags and structured data.",
+    "description": "Extension description shown in the store and add-ons manager."
+  },
+
+  "toolSource":  { "message": "View Source" },
+  "toolSeo":     { "message": "SEO Check" },
+  "toolSocial":  { "message": "Social Preview" },
+  "toolExtract": { "message": "Extract HTML" },
+
+  "menuPageParent":  { "message": "View Page Source" },
+  "menuLinkParent":  { "message": "View Linked Page Source" },
+  "menuImageSource": { "message": "View Image Source" },
+
+  "cmdSource":  { "message": "Run the default tool on the current page" },
+  "cmdSeo":     { "message": "Run SEO Check on the current page" },
+  "cmdSocial":  { "message": "Run Social Preview on the current page" },
+  "cmdExtract": { "message": "Extract HTML from the current page" },
+
+  "popupCurrentPage":     { "message": "Current Page:" },
+  "popupLoading":         { "message": "Loading..." },
+  "popupQuickLook":       { "message": "Quick Look" },
+  "popupAnalyzing":       { "message": "Analyzing..." },
+  "popupViewFullSource":  { "message": "View full source" },
+  "popupQuickSettings":   { "message": "Quick Settings" },
+  "popupStylize":         { "message": "Enable syntax highlighting" },
+  "popupWordwrap":        { "message": "Enable word wrap" },
+  "popupRecent":          { "message": "Recent" },
+  "popupClear":           { "message": "Clear" },
+  "popupVisitWebsite":    { "message": "Visit Website" },
+
+  "labelStatus":    { "message": "Status" },
+  "labelTitle":     { "message": "Title" },
+  "labelSize":      { "message": "Size" },
+  "labelTags":      { "message": "Tags" },
+  "labelWords":     { "message": "Words" },
+  "labelGenerator": { "message": "Generator" },
+
+  "errUnsupportedPage":  { "message": "Cannot view source for this page. Only HTTP and HTTPS pages are supported." },
+  "errNoUrl":            { "message": "Unable to get current page URL." },
+  "errInvalidUrl":       { "message": "Invalid URL" },
+  "errQuickLookFailed":  { "message": "Quick Look failed." },
+  "errReachService":     { "message": "Could not reach the extension service." },
+  "errInit":             { "message": "Error initializing popup." },
+  "errOpenFailed":       { "message": "Failed to open source viewer." },
+  "errCannotAnalyze":    { "message": "This page cannot be analyzed." },
+  "errAuth":             { "message": "Could not authenticate with the server." },
+  "errAnalysisFailed":   { "message": "Analysis failed." },
+  "errNetwork":          { "message": "Network error. Please try again." },
+
+  "optionsTitle":           { "message": "View Page Source Options" },
+  "optionsDefaultTool":     { "message": "Default tool" },
+  "optionsDefaultToolHint": { "message": "Used by the keyboard shortcut and instant toolbar clicks." },
+  "optionsToolbar":         { "message": "Toolbar button" },
+  "optionsToolbarPopup":    { "message": "Open the popup (default)" },
+  "optionsToolbarInstant":  { "message": "Run the default tool immediately" },
+  "optionsFormatting":      { "message": "Default formatting" },
+  "optionsFormattingHint":  { "message": "Applies to View Source and Extract HTML." },
+  "optionsSaved":           { "message": "Saved" }
+}

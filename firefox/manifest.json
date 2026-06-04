@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
   "name": "View Page Source",
-  "version": "1.1.1",
-  "description": "View source code, detect 100+ web technologies, and analyze SEO — meta tags, structured data, frameworks, and more.",
+  "version": "1.2.0",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
   "browser_specific_settings": {
     "gecko": {
       "id": "view-page-source@view-page-source.com",
@@ -17,7 +18,7 @@
     "activeTab",
     "contextMenus",
     "storage",
-    "notifications"
+    "https://www.view-page-source.com/*"
   ],
   "browser_action": {
     "default_icon": {
@@ -28,6 +29,10 @@
     },
     "default_title": "View Page Source",
     "default_popup": "popup/popup.html"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "browser_style": false
   },
   "background": {
     "scripts": ["background.js"],
@@ -40,12 +45,21 @@
     "128": "icons/icon-128.png"
   },
   "commands": {
-    "_execute_browser_action": {
+    "view-source": {
       "suggested_key": {
         "default": "Ctrl+Shift+Y",
         "mac": "Command+Shift+Y"
       },
-      "description": "View page source"
+      "description": "__MSG_cmdSource__"
+    },
+    "view-seo": {
+      "description": "__MSG_cmdSeo__"
+    },
+    "view-social": {
+      "description": "__MSG_cmdSocial__"
+    },
+    "view-extract": {
+      "description": "__MSG_cmdExtract__"
     }
   }
 }
