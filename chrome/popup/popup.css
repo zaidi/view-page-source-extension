@@ -148,8 +148,8 @@ body {
   cursor: not-allowed;
 }
 
-/* Make the third (odd) tool button span the full width */
-.tool-grid .tool-btn:last-child {
+/* Make the last button of an odd-sized grid span the full width */
+.tool-grid .tool-btn:last-child:nth-child(odd) {
   grid-column: 1 / -1;
 }
 

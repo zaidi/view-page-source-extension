@@ -19,8 +19,18 @@
       <select id="default-tool">
         <option value="source" data-i18n="toolSource">View Source</option>
         <option value="seo" data-i18n="toolSeo">SEO Check</option>
+        <option value="headers" data-i18n="toolHeaders">Headers Check</option>
         <option value="social" data-i18n="toolSocial">Social Preview</option>
         <option value="extract" data-i18n="toolExtract">Extract HTML</option>
+        <option value="download" data-i18n="toolDownload">Download Source</option>
+      </select>
+    </section>
+
+    <section class="group">
+      <h2 data-i18n="optionsSiteLanguage">Website language</h2>
+      <p class="hint" data-i18n="optionsSiteLanguageHint">The language view-page-source.com opens in.</p>
+      <select id="site-language">
+        <option value="auto" data-i18n="optionsSiteLanguageAuto">Same as the browser</option>
       </select>
     </section>
 
@@ -52,6 +62,7 @@
     <div class="status" id="status" data-i18n="optionsSaved">Saved</div>
   </div>
 
+  <script src="../tools.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

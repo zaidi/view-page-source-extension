@@ -8,6 +8,8 @@
   "toolSeo":     { "message": "SEO Check" },
   "toolSocial":  { "message": "Social Preview" },
   "toolExtract": { "message": "Extract HTML" },
+  "toolHeaders":  { "message": "Headers Check" },
+  "toolDownload": { "message": "Download Source" },
 
   "menuPageParent":  { "message": "View Page Source" },
   "menuLinkParent":  { "message": "View Linked Page Source" },
@@ -17,6 +19,8 @@
   "cmdSeo":     { "message": "Run SEO Check on the current page" },
   "cmdSocial":  { "message": "Run Social Preview on the current page" },
   "cmdExtract": { "message": "Extract HTML from the current page" },
+  "cmdHeaders":  { "message": "Run Headers Check on the current page" },
+  "cmdDownload": { "message": "Download the source of the current page" },
 
   "popupCurrentPage":     { "message": "Current Page:" },
   "popupLoading":         { "message": "Loading..." },
@@ -57,5 +61,8 @@
   "optionsToolbarInstant":  { "message": "Run the default tool immediately" },
   "optionsFormatting":      { "message": "Default formatting" },
   "optionsFormattingHint":  { "message": "Applies to View Source and Extract HTML." },
+  "optionsSiteLanguage":     { "message": "Website language" },
+  "optionsSiteLanguageHint": { "message": "The language view-page-source.com opens in." },
+  "optionsSiteLanguageAuto": { "message": "Same as the browser" },
   "optionsSaved":           { "message": "Saved" }
 }

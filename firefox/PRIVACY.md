@@ -1,6 +1,6 @@
 # Privacy Policy - View Page Source Firefox Extension
 
-**Last Updated: June 4, 2026**
+**Last Updated: October 22, 2026**
 
 ## Overview
 
@@ -25,7 +25,7 @@ The Extension collects and processes **minimal data** required for functionality
    - **Permission**: `activeTab`, plus access to `www.view-page-source.com` for Quick Look (Firefox permissions)
 
 2. **User Preferences** (optional settings)
-   - **What**: Your default tool, default formatting (syntax highlighting / word wrap), and toolbar-button behaviour
+   - **What**: Your default tool, default formatting (syntax highlighting / word wrap), website language, and toolbar-button behaviour
    - **Where**: Stored in Firefox's sync storage
    - **Why**: To remember your settings across devices
    - **How Long**: Until you uninstall the extension or clear browser data

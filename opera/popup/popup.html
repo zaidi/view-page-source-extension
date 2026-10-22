@@ -30,8 +30,10 @@
 
         <div class="tool-grid">
           <button class="tool-btn" data-tool="seo" data-i18n="toolSeo">SEO Check</button>
+          <button class="tool-btn" data-tool="headers" data-i18n="toolHeaders">Headers Check</button>
           <button class="tool-btn" data-tool="social" data-i18n="toolSocial">Social Preview</button>
           <button class="tool-btn" data-tool="extract" data-i18n="toolExtract">Extract HTML</button>
+          <button class="tool-btn" data-tool="download" data-i18n="toolDownload">Download Source</button>
         </div>
 
         <button id="quick-look-btn" class="secondary-btn" data-i18n="popupQuickLook">Quick Look</button>
@@ -71,11 +73,12 @@
     </div>
 
     <div class="footer">
-      <a href="https://www.view-page-source.com" target="_blank" class="link" data-i18n="popupVisitWebsite">Visit Website</a>
-      <span class="version">v1.2.0</span>
+      <a href="https://www.view-page-source.com" target="_blank" class="link" id="website-link" data-i18n="popupVisitWebsite">Visit Website</a>
+      <span class="version">v1.3.0</span>
     </div>
   </div>
 
+  <script src="../tools.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

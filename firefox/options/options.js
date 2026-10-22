@@ -1,11 +1,5 @@
 // View Page Source - Firefox Options Script
-
-const DEFAULTS = {
-  stylize: true,
-  wordwrap: false,
-  defaultTool: 'source',
-  toolbarAction: 'popup'
-};
+// DEFAULT_SETTINGS and SITE_LANGUAGES come from tools.js
 
 // Short alias for the i18n lookup
 const t = (key) => browser.i18n.getMessage(key);
@@ -27,9 +21,9 @@ function applyI18n() {
 async function getSettings() {
   try {
     const result = await browser.storage.sync.get('settings');
-    return { ...DEFAULTS, ...(result.settings || {}) };
+    return { ...DEFAULT_SETTINGS, ...(result.settings || {}) };
   } catch (error) {
-    return { ...DEFAULTS };
+    return { ...DEFAULT_SETTINGS };
   }
 }
 
@@ -55,7 +49,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyI18n();
   const settings = await getSettings();
 
+  // One option per website language, after "Same as the browser"
+  const languageSelect = document.getElementById('site-language');
+  for (const [code, name] of Object.entries(SITE_LANGUAGES)) {
+    const option = document.createElement('option');
+    option.value = code;
+    option.lang = code;
+    option.textContent = name;
+    languageSelect.appendChild(option);
+  }
+
   document.getElementById('default-tool').value = settings.defaultTool;
+  languageSelect.value = settings.siteLanguage;
   const toolbarRadio = document.querySelector(`input[name="toolbar"][value="${settings.toolbarAction}"]`);
   if (toolbarRadio) toolbarRadio.checked = true;
   document.getElementById('stylize').checked = settings.stylize;
@@ -63,6 +68,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('default-tool').addEventListener('change', (e) => {
     save({ defaultTool: e.target.value });
+  });
+  languageSelect.addEventListener('change', (e) => {
+    save({ siteLanguage: e.target.value });
   });
   document.querySelectorAll('input[name="toolbar"]').forEach((radio) => {
     radio.addEventListener('change', (e) => {
