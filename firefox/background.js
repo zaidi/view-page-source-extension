@@ -1,17 +1,9 @@
 // View Page Source - Firefox Extension Background Script
-
-const WEBSITE_URL = 'https://www.view-page-source.com';
+// WEBSITE_URL, TOOLS, DEFAULT_SETTINGS and buildToolUrl() come from tools.js,
+// loaded before this script (see manifest.json)
 
 // Short alias for the i18n lookup
 const t = (key) => browser.i18n.getMessage(key);
-
-// Tools we can deep-link into. `formatting` = the page honours stylize/wrap.
-const TOOLS = {
-  source:  { path: '/',                title: t('toolSource'),  formatting: true  },
-  seo:     { path: '/seo-checker/',    title: t('toolSeo'),     formatting: false },
-  social:  { path: '/social-preview/', title: t('toolSocial'),  formatting: false },
-  extract: { path: '/html-extractor/', title: t('toolExtract'), formatting: true  }
-};
 
 // Only http/https targets are analyzable
 const URL_PATTERNS = ['http://*/*', 'https://*/*'];
@@ -38,14 +30,14 @@ browser.runtime.onInstalled.addListener(() => {
       browser.contextMenus.create({
         id: `page:${key}`,
         parentId: 'page',
-        title: TOOLS[key].title,
+        title: t(TOOLS[key].msg),
         contexts: ['page', 'frame'],
         documentUrlPatterns: URL_PATTERNS
       });
       browser.contextMenus.create({
         id: `link:${key}`,
         parentId: 'link',
-        title: TOOLS[key].title,
+        title: t(TOOLS[key].msg),
         contexts: ['link'],
         targetUrlPatterns: URL_PATTERNS
       });
@@ -63,8 +55,7 @@ browser.runtime.onInstalled.addListener(() => {
 // Handle context menu clicks
 browser.contextMenus.onClicked.addListener((info, tab) => {
   const [scope, key] = String(info.menuItemId).split(':');
-  const tool = TOOLS[key];
-  if (!tool) return;
+  if (!TOOLS[key]) return;
 
   let url;
   if (scope === 'link') {
@@ -75,14 +66,16 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
     // page/frame: prefer the frame URL when the click was inside an iframe
     url = info.frameUrl || (tab && tab.url);
   }
-  openTool(tool, url);
+  openTool(key, url);
 });
 
 // Extra keyboard commands mapped to tools (users assign keys in the browser settings)
 const COMMAND_TOOLS = {
   'view-seo': 'seo',
+  'view-headers': 'headers',
   'view-social': 'social',
-  'view-extract': 'extract'
+  'view-extract': 'extract',
+  'view-download': 'download'
 };
 
 // Handle keyboard shortcuts: view-source runs the default tool; the rest
@@ -94,7 +87,7 @@ browser.commands.onCommand.addListener(async (command) => {
   if (command === 'view-source') {
     runDefaultTool(tab.url);
   } else if (COMMAND_TOOLS[command]) {
-    openTool(TOOLS[COMMAND_TOOLS[command]], tab.url);
+    openTool(COMMAND_TOOLS[command], tab.url);
   }
 });
 
@@ -106,7 +99,7 @@ browser.commands.onCommand.addListener(async (command) => {
  */
 async function runDefaultTool(url) {
   const settings = await getSettings();
-  openTool(TOOLS[settings.defaultTool] || TOOLS.source, url);
+  openTool(settings.defaultTool, url);
 }
 
 /**
@@ -142,17 +135,46 @@ browser.browserAction.onClicked.addListener((tab) => {
 
 // ---- Toolbar status badge ----
 
+// Badge colours: green = fetched OK, amber = redirect or "try again later",
+// red = the page could not be fetched. All dark enough for the white badge text.
+const BADGE_OK = '#2e7d32';
+const BADGE_WAIT = '#a15c00';
+const BADGE_FAIL = '#c62828';
+
 /**
- * Shows the HTTP status code on the toolbar badge for a tab
+ * Shows a Quick Look outcome on the toolbar badge for a tab
  * @param {number} tabId
- * @param {number} httpCode
+ * @param {string} text - At most 4 characters fit
+ * @param {string} color
  */
-function setStatusBadge(tabId, httpCode) {
-  if (!tabId || !httpCode) return;
-  const color = httpCode < 300 ? '#2e7d32' : httpCode < 400 ? '#f9a825' : '#c62828';
+function setStatusBadge(tabId, text, color) {
+  if (!tabId || !text) return;
   try {
     browser.browserAction.setBadgeBackgroundColor({ tabId, color });
-    browser.browserAction.setBadgeText({ tabId, text: String(httpCode) });
+    browser.browserAction.setBadgeText({ tabId, text });
+  } catch (error) {
+    // ignore
+  }
+}
+
+/**
+ * Badge colour for an HTTP status code
+ * @param {number} httpCode
+ * @returns {string}
+ */
+function statusColor(httpCode) {
+  return httpCode < 300 ? BADGE_OK : httpCode < 400 ? BADGE_WAIT : BADGE_FAIL;
+}
+
+/**
+ * Sets the badge on the active tab (the one the popup's Quick Look ran on)
+ * @param {string} text
+ * @param {string} color
+ */
+async function setActiveTabBadge(text, color) {
+  try {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]) setStatusBadge(tabs[0].id, text, color);
   } catch (error) {
     // ignore
   }
@@ -167,28 +189,17 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
 
 /**
  * Opens the given tool on view-page-source.com for the specified URL
- * @param {Object} tool - One of the TOOLS entries
+ * @param {string} toolKey - Key into TOOLS
  * @param {string} url - The URL to analyze
  */
-async function openTool(tool, url) {
+async function openTool(toolKey, url) {
   if (!isValidUrl(url)) {
     console.error('Cannot view source for this page:', url);
     return;
   }
 
-  const encodedUrl = encodeURIComponent(url);
-  let targetUrl = `${WEBSITE_URL}${tool.path}?url=${encodedUrl}&autorun=true`;
-
-  // Only the source/extractor pages honour formatting preferences
-  if (tool.formatting) {
-    const settings = await getSettings();
-    if (settings.stylize) {
-      targetUrl += '&stylize=true';
-    }
-    if (settings.wordwrap) {
-      targetUrl += '&wrap=true';
-    }
-  }
+  const settings = await getSettings();
+  const targetUrl = buildToolUrl(toolKey, url, settings, browser.i18n.getUILanguage());
 
   await addToHistory(url);
   browser.tabs.create({ url: targetUrl, active: true });
@@ -198,13 +209,6 @@ async function openTool(tool, url) {
  * Gets the user's saved preferences, falling back to defaults
  * @returns {Promise<Object>}
  */
-const DEFAULT_SETTINGS = {
-  stylize: true,
-  wordwrap: false,
-  defaultTool: 'source',
-  toolbarAction: 'popup'
-};
-
 async function getSettings() {
   try {
     let result = await browser.storage.sync.get('settings');
@@ -300,8 +304,16 @@ async function quickLook(url) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url, token, stylize: false })
     });
-    const data = await res.json();
+    // Nginx answers its own 429/5xx with an HTML page, not JSON
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      // 429 = our own rate limit or the site's fetch budget: retrying later works.
+      // Anything else means the page itself could not be fetched.
+      if (res.status === 429) {
+        await setActiveTabBadge('WAIT', BADGE_WAIT);
+      } else {
+        await setActiveTabBadge('ERR', BADGE_FAIL);
+      }
       return { ok: false, error: data.error || t('errAnalysisFailed') };
     }
 
@@ -313,8 +325,7 @@ async function quickLook(url) {
 
     // Reflect the HTTP status on the toolbar badge for the active tab
     if (server.httpCode) {
-      const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-      if (tabs[0]) setStatusBadge(tabs[0].id, server.httpCode);
+      await setActiveTabBadge(String(server.httpCode), statusColor(server.httpCode));
     }
 
     return {

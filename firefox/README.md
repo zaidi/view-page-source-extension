@@ -4,14 +4,15 @@ A Firefox browser extension that allows you to quickly view any webpage's HTML s
 
 ## Features
 
-- **Multiple Tools** - View Source, SEO Check, Social Preview, and Extract HTML, from the toolbar popup or the right-click menu
+- **Multiple Tools** - View Source, SEO Check, Headers Check, Social Preview, Extract HTML, and Download Source, from the toolbar popup or the right-click menu
 - **One-Click Access** - Click the extension icon or use a keyboard shortcut (`Ctrl+Shift+Y` / `Cmd+Shift+Y`)
 - **Right-Click Context Menu** - Run any tool on the current page, a linked page, or an image
 - **Quick Look** - See a page's HTTP status, title, size, tag/word counts, and generator inline in the popup, without opening a new tab
 - **Recent History** - Re-open the last 10 pages you analyzed (stored locally on your device)
-- **Options Page** - Choose your default tool, default formatting, and whether the toolbar button opens the popup or runs your default tool instantly
-- **Per-Tool Shortcuts** - Assign keyboard shortcuts to SEO Check, Social Preview, and Extract HTML
-- **Toolbar Status Badge** - After a Quick Look, the icon shows the page's HTTP status code, colour-coded
+- **Options Page** - Choose your default tool, default formatting, the website language, and whether the toolbar button opens the popup or runs your default tool instantly
+- **Your Language** - Tools open on view-page-source.com in your browser's language when the site is available in it (Arabic, Dutch, English, French, German, Indonesian, Italian, Japanese, Polish, Portuguese, Spanish, Turkish), or in the language you pick in Options
+- **Per-Tool Shortcuts** - Assign keyboard shortcuts to SEO Check, Headers Check, Social Preview, Extract HTML, and Download Source
+- **Toolbar Status Badge** - After a Quick Look, the icon shows the page's HTTP status code in green, `WAIT` in amber when the check should be retried later, or `ERR` in red when the page could not be fetched
 - **Smart Analysis** - Comprehensive SEO audit covering meta tags, Open Graph, structured data (JSON-LD), internationalization, links, resources, and security indicators
 - **Technology Detection** - Identify 100+ technologies including CMS platforms (WordPress, Shopify, Wix), JavaScript frameworks (React, Vue, Next.js), CSS frameworks (Tailwind, Bootstrap), analytics (Google Analytics, Hotjar), CDNs, payment systems, and more
 - **Performance Metrics** - DNS lookup, TCP connection, TLS handshake, server response, and download times
@@ -52,20 +53,20 @@ Coming soon!
 ## Usage
 
 ### Toolbar Button
-Click the extension icon to open the popup. From there you can run **View Source**, **SEO Check**, **Social Preview**, or **Extract HTML** on the current page, run a **Quick Look**, or re-open a page from **Recent**. (You can switch the toolbar button to run your default tool instantly instead of opening the popup. See the Options page.)
+Click the extension icon to open the popup. From there you can run **View Source**, **SEO Check**, **Headers Check**, **Social Preview**, **Extract HTML**, or **Download Source** on the current page, run a **Quick Look**, or re-open a page from **Recent**. (You can switch the toolbar button to run your default tool instantly instead of opening the popup. See the Options page.)
 
 ### Right-Click Menu
 Right-click a **page**, a **link**, or an **image** and choose from the **View Page Source** submenu to run any tool. On a link it analyzes the link's target; on an image it inspects the image resource.
 
 ### Keyboard Shortcuts
 - `Ctrl+Shift+Y` (Win/Linux) / `Cmd+Shift+Y` (Mac) runs your **default tool** on the current page
-- SEO Check, Social Preview, and Extract HTML can each be given their own shortcut via `about:addons`, then the gear icon, then "Manage Extension Shortcuts"
+- SEO Check, Headers Check, Social Preview, Extract HTML, and Download Source can each be given their own shortcut via `about:addons`, then the gear icon, then "Manage Extension Shortcuts"
 
 ### Quick Look
-Click **Quick Look** in the popup to fetch a compact summary (HTTP status, title, size, tag and word counts, and generator) without opening a new tab. The toolbar badge then shows the page's status code.
+Click **Quick Look** in the popup to fetch a compact summary (HTTP status, title, size, tag and word counts, and generator) without opening a new tab. The toolbar badge then shows the page's status code (green), `WAIT` (amber: the page was checked many times recently, so try again in a few minutes), or `ERR` (red: the page could not be fetched).
 
 ### Options
-Open the extension's options to set your **default tool**, **default formatting** (syntax highlighting / word wrap), and the **toolbar-button behaviour** (open the popup, or run the default tool instantly).
+Open the extension's options to set your **default tool**, **default formatting** (syntax highlighting / word wrap), the **website language** (same as the browser by default), and the **toolbar-button behaviour** (open the popup, or run the default tool instantly).
 
 ## Quick Settings
 
@@ -79,8 +80,7 @@ Your settings are saved automatically and synced across devices (if signed into 
 ## Supported Pages
 
 The extension works on:
-- All HTTP and HTTPS websites
-- Localhost and local development servers
+- All public HTTP and HTTPS websites
 
 The extension does NOT work on:
 - Firefox internal pages (`about:`, `moz-extension://`)
@@ -88,6 +88,7 @@ The extension does NOT work on:
 - View-source pages (`view-source:`)
 - File URLs (`file://`)
 - Data URLs (`data:`, `javascript:`)
+- Localhost, local development servers, and private-network addresses (the View Page Source server can only fetch public websites)
 
 When viewing an unsupported page, the extension will indicate it's not available.
 
@@ -115,8 +116,10 @@ When viewing an unsupported page, the extension will indicate it's not available
 |--------|---------------|-----|
 | Default tool (View Source) | `Ctrl+Shift+Y` | `Cmd+Shift+Y` |
 | SEO Check | _unassigned_ | _unassigned_ |
+| Headers Check | _unassigned_ | _unassigned_ |
 | Social Preview | _unassigned_ | _unassigned_ |
 | Extract HTML | _unassigned_ | _unassigned_ |
+| Download Source | _unassigned_ | _unassigned_ |
 
 ### Customize Keyboard Shortcuts
 1. Go to `about:addons`
@@ -128,10 +131,14 @@ When viewing an unsupported page, the extension will indicate it's not available
 ### Extension Icon is Greyed Out
 The current page is not supported (e.g., `about:` pages). Try navigating to an HTTP or HTTPS website.
 
-### "Failed to fetch URL" Error
+### "Failed to fetch URL" Error, or a red `ERR` badge
 - The website may be blocking requests from View Page Source
 - The website may have rate limiting or security measures
 - Try again in a few moments
+
+### "Checked several times" / "Blocking automated requests" message, or an amber `WAIT` badge
+- View Page Source limits how often any one website is fetched, so the site isn't overloaded
+- Wait a few minutes and try again. Other websites still work in the meantime
 
 ### Source Code Not Loading Automatically
 - Check your browser's popup blocker settings
@@ -150,6 +157,7 @@ Temporarily loaded add-ons are removed when Firefox closes. For permanent instal
 browser-plugin/firefox/
 ├── manifest.json           # Extension configuration (Manifest V2)
 ├── background.js           # Background script (event handling)
+├── tools.js                # Tool list, page paths per website language, default settings
 ├── popup/
 │   ├── popup.html         # Popup interface
 │   ├── popup.css          # Popup styles
@@ -213,6 +221,13 @@ This extension is part of the View Page Source project.
 - **Privacy Policy**: See [PRIVACY.md](PRIVACY.md)
 
 ## Changelog
+
+### Version 1.3.0 (2026-10-22)
+- **New tools**: Headers Check (HTTP security-header report card, graded A–F) and Download Source (save a page's source as HTML, text, or Markdown), in the popup, the right-click menu, Options, and as assignable keyboard shortcuts
+- **Your language**: tools open on view-page-source.com in your browser's language when the site is available in it, with a "Website language" choice in Options
+- **Clearer status badge**: after a Quick Look the badge shows the HTTP status (green), `WAIT` (amber) when the check should be retried later, or `ERR` (red) when the page could not be fetched
+- Quick Look now reports "Analysis failed" instead of a misleading network error when the server is overloaded and answers with an error page
+- "Visit Website" in the popup opens the homepage in your website language
 
 ### Version 1.2.0 (2026-06-04)
 - **New tools**: SEO Check, Social Preview, and Extract HTML, from the popup and the right-click menu

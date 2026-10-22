@@ -1,14 +1,6 @@
 // View Page Source - Firefox Popup Script
-
-const WEBSITE_URL = 'https://www.view-page-source.com';
-
-// Tools the popup can launch. `formatting` = the page honours stylize/wrap.
-const TOOLS = {
-  source:  { path: '/',                formatting: true  },
-  seo:     { path: '/seo-checker/',    formatting: false },
-  social:  { path: '/social-preview/', formatting: false },
-  extract: { path: '/html-extractor/', formatting: true  }
-};
+// WEBSITE_URL, TOOLS, TOOL_PATHS, DEFAULT_SETTINGS, resolveSiteLanguage() and
+// buildToolUrl() come from tools.js
 
 let currentUrl = '';
 
@@ -50,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load saved settings
     await loadSettings();
+    await linkWebsite();
 
     // Wire every tool button (primary + secondary) via its data-tool attribute
     document.querySelectorAll('[data-tool]').forEach((btn) => {
@@ -135,8 +128,7 @@ function isValidUrl(url) {
  * @param {string} toolId - Key into TOOLS
  */
 async function openTool(toolId, url = currentUrl) {
-  const tool = TOOLS[toolId];
-  if (!tool) return;
+  if (!TOOLS[toolId]) return;
 
   if (!url || !isValidUrl(url)) {
     showError(t('errInvalidUrl'));
@@ -144,20 +136,9 @@ async function openTool(toolId, url = currentUrl) {
   }
 
   try {
-    // Construct target URL
-    const encodedUrl = encodeURIComponent(url);
-    let targetUrl = `${WEBSITE_URL}${tool.path}?url=${encodedUrl}&autorun=true`;
-
-    // Only the source/extractor pages honour formatting preferences
-    if (tool.formatting) {
-      const settings = await getSettings();
-      if (settings.stylize) {
-        targetUrl += '&stylize=true';
-      }
-      if (settings.wordwrap) {
-        targetUrl += '&wrap=true';
-      }
-    }
+    // Construct target URL (in the website language matching the browser)
+    const settings = await getSettings();
+    const targetUrl = buildToolUrl(toolId, url, settings, browser.i18n.getUILanguage());
 
     // Remember this URL before the popup closes
     await addToHistory(url);
@@ -266,6 +247,15 @@ async function loadSettings() {
 }
 
 /**
+ * Points the "Visit Website" link at the homepage in the website language
+ */
+async function linkWebsite() {
+  const settings = await getSettings();
+  const lang = resolveSiteLanguage(settings.siteLanguage, browser.i18n.getUILanguage());
+  document.getElementById('website-link').href = WEBSITE_URL + TOOL_PATHS[lang].source;
+}
+
+/**
  * Saves settings to storage
  */
 async function saveSettings() {
@@ -290,7 +280,6 @@ async function saveSettings() {
  * @returns {Promise<Object>} - Settings object
  */
 async function getSettings() {
-  const defaults = { stylize: true, wordwrap: false, defaultTool: 'source', toolbarAction: 'popup' };
   try {
     let result = await browser.storage.sync.get('settings');
 
@@ -299,10 +288,10 @@ async function getSettings() {
       result = await browser.storage.local.get('settings');
     }
 
-    return { ...defaults, ...(result.settings || {}) };
+    return { ...DEFAULT_SETTINGS, ...(result.settings || {}) };
   } catch (error) {
     // Return defaults on error
-    return { ...defaults };
+    return { ...DEFAULT_SETTINGS };
   }
 }
 
